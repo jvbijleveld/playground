@@ -1,33 +1,50 @@
 package nl.vanbijleveld.playground.controller;
 
-import java.util.Arrays;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
+import nl.vanbijleveld.imapreader.NewEmailService;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PlaygroundController {
 
+    @Value("${email.smtp.host}")
+    private String emailHost;
+
+    @Value("${email.smtp.user}")
+    private String emailUser;
+
+    @Value("${email.smtp.password}")
+    private String emailPass;
+
     @RequestMapping(value = "/")
     public String homePage() {
         return "home";
     }
 
-    @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
+    @RequestMapping(value = "/imap")
+    public String emailTester() {
+        String ret = "";
+        try {
+            NewEmailService mailService = new NewEmailService(emailHost, emailUser, emailPass);
 
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
+            Message[] newMessages = mailService.checkForNewEmail();
 
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
+            for (Message mail : newMessages) {
+
+                ret += mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getFrom() + "<br>";
+                System.out.println("processing mail: " + mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getFrom());
             }
 
-        };
+            return ret;
+
+        } catch (MessagingException e) {
+            return "Error connecting mailbox: " + e.getMessage();
+        }
     }
+
 }
