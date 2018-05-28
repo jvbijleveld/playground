@@ -35,6 +35,7 @@ public class PlaygroundController {
             for (Message mail : newMessages) {
                 ret += mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getFrom() + "<br>";
                 System.out.println("processing mail: " + mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getFrom().toString());
+
             }
 
             return ret;
