@@ -6,6 +6,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import nl.vanbijleveld.imapreader.ImapService;
+import nl.vanbijleveld.imapreader.entities.Attachment;
 import nl.vanbijleveld.imapreader.entities.Email;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +37,14 @@ public class PlaygroundController {
             ImapService mailService = new ImapService(emailHost, emailUser, emailPass);
             List<Email> newMessages = mailService.getAllNewEmail();
             for (Email mail : newMessages) {
-                ret += mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getFrom() + "<br>";
-                System.out.println("processing mail: " + mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getFrom().toString());
+                ret += mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getPrettyFrom() + "<br>";
+
+                for (Attachment attachment : mail.getAttachments()) {
+                    ret += "............" + attachment.getFileName() + "<br>";
+
+                }
+                ret += "<br>";
+                System.out.println("processing mail: " + mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getPrettyFrom());
 
             }
 
@@ -46,5 +53,4 @@ public class PlaygroundController {
             return "Error connecting mailbox: " + e.getMessage();
         }
     }
-
 }
