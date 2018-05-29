@@ -38,20 +38,20 @@ public class PlaygroundController {
     public String emailTester() {
         String ret = "The mail I found..<br><br>";
 
-        LOGGER.debug("Start fetching new mail");
+        LOGGER.info("Start fetching new mail");
         try {
             ImapService mailService = new ImapService(emailHost, emailUser, emailPass);
             LOGGER.debug("Connected to host {} with user {}", emailHost, emailUser);
             List<Email> newMessages = mailService.getAllNewEmail();
             for (Email mail : newMessages) {
 
-                LOGGER.debug("Found new email from {} received on {}", mail.getPrettyFrom(), mail.getReceivedDate());
+                LOGGER.info("Found new email from {} received on {}", mail.getPrettyFrom(), mail.getReceivedDate());
                 ret += mail.getSubject() + " received on " + mail.getReceivedDate() + " from " + mail.getPrettyFrom() + "<br>";
 
                 if (mail.getAttachments() != null) {
                     for (Attachment attachment : mail.getAttachments()) {
                         ret += "............" + attachment.getFileName() + "<br>";
-                        LOGGER.debug("Found attachment {}", attachment.getFileName());
+                        LOGGER.info("Found attachment {}", attachment.getFileName());
                     }
                 }
                 ret += "<br>";
